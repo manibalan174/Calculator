@@ -1,0 +1,122 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "Calculator";
+}
+<link href="~/Content/Style.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+@*<script src="~/Scripts/jquery-3.4.1.js"></script>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>*@
+<div class="" aria-live="polite" aria-atomic="true" style="position: relative;min-height:200px" hidden>
+    <!-- Position it -->
+    <div style="position: absolute; top: 0; right: 0;">
+
+        <!-- Then put toasts within -->
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <img src="..." class="rounded mr-2" alt="...">
+                <strong class="mr-auto">Bootstrap</strong>
+                <small class="text-muted">just now</small>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                See? Just like this.
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<div id="calcFrame">
+    <form id="Calculator">
+        <div id="calcScreenDiv"><input id="calcScreen" name="display" placeholder="0"></div>
+        <table id="buttonsDiv">
+            <tr>
+                <td><input type="reset" value="AC" id="resetButton"></td>
+                <td><button type="button" id="clearLast">CE</button></td>
+                <td><button type="button" onclick="display.value += '%'">%</button></td>
+                <td><button type="button" onclick="display.value += '/'">/</button></td>
+            </tr>
+            <tr>
+                <td><button type="button" onclick="display.value += '7'">7</button></td>
+                <td><button type="button" onclick="display.value += '8'">8</button></td>
+                <td><button type="button" onclick="display.value += '9'">9</button></td>
+                <td><button type="button" onclick="display.value += '*'">x</button></td>
+            </tr>
+            <tr>
+                <td><button type="button" onclick="display.value += '4'">4</button></td>
+                <td><button type="button" onclick="display.value += '5'">5</button></td>
+                <td><button type="button" onclick="display.value += '6'">6</button></td>
+                <td><button type="button" onclick="display.value += '-'">-</button></td>
+            </tr>
+            <tr>
+                <td><button type="button" onclick="display.value += '1'">1</button></td>
+                <td><button type="button" onclick="display.value += '2'">2</button></td>
+                <td><button type="button" onclick="display.value += '3'">3</button></td>
+                <td><button id="plus" type="button" onclick="display.value += '+'">+</button></td>
+            </tr>
+            <tr>
+
+                <td><button type="button" onclick="display.value += '0'">0</button></td>
+                <td><button type="button" onclick="plusminus()">&plusmn</button></td>
+                <td><button type="button" onclick="display.value += '.'">.</button></td>
+                <td><button type="button" onclick="Validation()">=</button></td>
+            </tr>
+        </table>
+        <div class="text-center text-info Result"><label>Results : <span id="ResultValues">0</span></label></div>
+    </form>
+</div>
+
+
+<script>
+    $('#clearLast').on('click', function () {
+        //get the input's value
+        var textVal = $('#calcScreen').val();
+        //set the input's value
+        $('#calcScreen').val(textVal.substring(0, textVal.length - 1));
+    });
+    $('#resetButton').on('click', function () {
+        $("#ResultValues").text(0);
+    });
+    function plusminus() {
+        var textVal = $('#calcScreen').val();
+        textVal = textVal * -1;
+        $('#calcScreen').val(textVal);
+    }
+</script>
+
+<script>
+    function Validation() {
+        var calculatorsVAlues = $("#calcScreen").val()
+        if (calculatorsVAlues != "" && calculatorsVAlues != null && calculatorsVAlues != undefined) {
+
+            $.ajax({
+                url:"@Url.Action("CalculationLogic", "Calculator")",
+                type: "POST", //send it through get method
+                data: {
+                    calcValues: calculatorsVAlues
+                },
+                success: function (result) {
+                    $("#calcScreen").val(result);
+                    $("#ResultValues").text(result);
+                },
+                error: function (xhr) {
+                    $(".toast-body").text("Please Select Correct Arithmatic Format (Ex: -12+281/2 or +12+2) : start + or - only !")
+                    $('.toast').toast('show')
+                }
+            });
+        }
+        else {
+            $(".toast-body").text("Please Enter the Values")
+            $('.toast').toast('show')
+        }
+
+}
+</script>
